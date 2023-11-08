@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.main-bg {
+    background-color: rgb(249, 250, 251);
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}
+
+.overlay {
+    position: relative;
+}
+
+/* 1024 -1 so it doesnt show when it hits 1024px */
+@media only screen and (max-width: 1023px) {
+    .overlay:after {
+        content: " ";
+        z-index: 29;
+        display: block;
+        height: 100%;
+        top: 80px;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.5);
+        pointer-events: none;
+        position: fixed;
+    }
+}
+
+.dynamic-col {
+    background-color: rgba(255,255,255, 1);
+    border-right-width: 1px;
+    will-change: width;
+    transition: background-color 2s ease-in-out;
+    transition: width 1s ease-in-out;
+}
