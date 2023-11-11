@@ -21,8 +21,8 @@ class TaskController extends ApiController
 
     public function index(Request $request) : JsonResponse
     {
-        $currPage = $request->input('current_page',1);
-        $perPage = $request->input('per_page', 3);
+        $currPage = $request->input('page',1);
+        $perPage = $request->input('perPage', 4);
         $task = Task::skip(($currPage - 1) * $perPage)
                     ->take($perPage)
                     ->get();
@@ -41,12 +41,7 @@ class TaskController extends ApiController
 
     public function store(Request $request) : JsonResponse
     {
-        if ($request->hasFile('attachment')) {
-            $type = $this->getType($request->file('attachment'));
-            $this->file = $this->service->{$type}(
-                file: $request->file('attachment')
-            );
-        }
+        $this->__hasFileAttachment($request);
 
         $task = Task::create($this->convertToTaskObject($request, $this->file)->toArray());
 
@@ -55,6 +50,29 @@ class TaskController extends ApiController
             TaskResource::make($task),
             200
         );
+    }
+
+    public function update(Task $task, Request $request) : JsonResponse
+    {
+        $this->__hasFileAttachment($request);
+
+        $task->update($this->convertToTaskObject($request, $this->file)->toArray());
+
+        return $this->successJsonResponse(
+            'Successfully updated a task',
+            TaskResource::make($task),
+            200
+        );
+    }
+
+    private function __hasFileAttachment($request) : void
+    {
+        if ($request->hasFile('attachment')) {
+            $type = $this->getType($request->file('attachment'));
+            $this->file = $this->service->{$type}(
+                file: $request->file('attachment')
+            );
+        }
     }
 
     private function convertToTaskObject($request) : DataTask
